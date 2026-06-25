@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LUMIÈRE — World Cinema Reviews</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,300;1,600&family=Syne:wght@400;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#060608;--s1:#0c0c10;--s2:#111116;--bd:#1e1e26;
+--mu:#38384a;--di:#666;--sm:#aaa;--wh:#f0f0f5;
+--gd:#c9a84c;--gl:#e8c86a;--rd:#a02828;
+--ease:cubic-bezier(0.16,1,0.3,1);
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--sm);font-family:'Inter',sans-serif;font-weight:300;overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+#c1,#c2{position:fixed;border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%)}
+#c1{width:8px;height:8px;background:var(--gd);transition:width .25s var(--ease),height .25s var(--ease),background .25s}
+#c2{width:32px;height:32px;border:1px solid rgba(201,168,76,.4);transition:width .3s var(--ease),height .3s var(--ease),border-color .3s}
+.hov:hover~#c1,a:hover~#c1,button:hover~#c1{width:18px;height:18px}
+
+/* GRAIN */
+body::after{content:'';position:fixed;inset:0;z-index:9997;pointer-events:none;
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+opacity:.028;animation:gr .6s steps(2) infinite}
+@keyframes gr{0%{background-position:0 0}50%{background-position:-20px 10px}100%{background-position:10px -8px}}
+
+/* LOADER */
+#ldr{position:fixed;inset:0;z-index:9998;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;transition:opacity .9s var(--ease),visibility .9s}
+#ldr.out{opacity:0;visibility:hidden}
+.lw{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(4rem,15vw,11rem);letter-spacing:.06em;color:var(--wh);display:flex;overflow:hidden}
+.ll{display:inline-block;animation:lup .8s var(--ease) both}
+.ll:nth-child(1){animation-delay:.04s}.ll:nth-child(2){animation-delay:.1s}.ll:nth-child(3){animation-delay:.16s}
+.ll:nth-child(4){animation-delay:.22s}.ll:nth-child(5){animation-delay:.28s}.ll:nth-child(6){animation-delay:.34s}
+.ll:nth-child(7){animation-delay:.4s}.ll:nth-child(8){animation-delay:.46s}
+@keyframes lup{from{transform:translateY(110%);opacity:0}to{transform:translateY(0);opacity:1}}
+.lb{width:160px;height:1px;background:var(--mu);overflow:hidden}
+.lb::after{content:'';display:block;height:100%;background:var(--gd);animation:lf 1.5s var(--ease) .5s forwards;transform:scaleX(0);transform-origin:left}
+@keyframes lf{to{transform:scaleX(1)}}
+.ls{font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--mu)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:1.8rem 3.5rem;transition:background .5s,border .5s,padding .4s var(--ease);border-bottom:1px solid transparent}
+nav.on{background:rgba(6,6,8,.96);border-bottom-color:var(--bd);padding:1.1rem 3.5rem;backdrop-filter:blur(16px)}
+.nl{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:.1em;color:var(--gd);text-decoration:none;display:flex;align-items:center;gap:8px}
+.nl .dot{width:7px;height:7px;background:var(--gd);border-radius:50%;animation:bk 1.3s step-end infinite}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:0}}
+.nls{display:flex;gap:2.5rem;list-style:none}
+.nls a{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--di);text-decoration:none;transition:color .3s;position:relative}
+.nls a::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:1px;background:var(--gd);transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+.nls a:hover{color:var(--gd)}.nls a:hover::after{transform:scaleX(1)}
+
+/* HERO */
+.hero{min-height:100vh;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:0 3.5rem 7rem}
+.hbg{position:absolute;inset:0;display:flex}
+.hpanel{flex:1;overflow:hidden;position:relative;transition:flex .8s var(--ease)}
+.hpanel:hover{flex:2.5}
+.hpanel img{width:100%;height:100%;object-fit:cover;filter:brightness(.2) saturate(.5);transition:filter .8s var(--ease),transform .8s var(--ease)}
+.hpanel:hover img{filter:brightness(.38) saturate(.8);transform:scale(1.06)}
+.hpanel .htitle{position:absolute;bottom:2rem;left:0;right:0;text-align:center;font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:transparent;transition:color .5s;padding:0 .5rem}
+.hpanel:hover .htitle{color:rgba(201,168,76,.9)}
+.hsh{position:absolute;inset:0;background:linear-gradient(to right,rgba(6,6,8,.97) 0%,rgba(6,6,8,.6) 45%,rgba(6,6,8,.15) 100%),linear-gradient(to top,rgba(6,6,8,1) 0%,rgba(6,6,8,.4) 30%,transparent 60%)}
+.hcon{position:relative;z-index:2;max-width:700px}
+.hbad{display:inline-flex;align-items:center;gap:.8rem;font-size:.6rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gd);margin-bottom:2rem;opacity:0;animation:su .8s 2s var(--ease) forwards}
+.hbad::before{content:'';width:24px;height:1px;background:var(--gd)}
+h1.ht{font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,9vw,7.5rem);font-weight:700;line-height:.9;color:var(--wh);opacity:0;animation:su 1s 2.2s var(--ease) forwards}
+h1.ht .it{font-style:italic;color:var(--gd)}
+h1.ht .out{-webkit-text-stroke:1px rgba(240,240,245,.4);color:transparent}
+.hsb{font-size:.95rem;line-height:1.85;color:var(--di);max-width:440px;margin-top:1.8rem;opacity:0;animation:su .9s 2.5s var(--ease) forwards}
+.hac{display:flex;align-items:center;gap:2rem;margin-top:3rem;opacity:0;animation:su .9s 2.7s var(--ease) forwards}
+.bg{display:inline-flex;align-items:center;gap:.7rem;background:var(--gd);color:var(--bg);font-size:.68rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;padding:1rem 2.2rem;text-decoration:none;overflow:hidden;position:relative;transition:transform .3s var(--ease)}
+.bg::before{content:'';position:absolute;inset:0;background:var(--wh);transform:translateX(-101%);transition:transform .5s var(--ease)}
+.bg:hover::before{transform:translateX(0)}.bg:hover{transform:translateY(-3px)}
+.bg span{position:relative;z-index:1}
+.bg2{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--di);text-decoration:none;transition:color .3s}
+.bg2:hover{color:var(--gd)}
+.hscr{position:absolute;right:3.5rem;bottom:3.5rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;opacity:0;animation:fi 1s 3s both}
+.hscr span{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mu)}
+.hrod{width:1px;height:52px;background:linear-gradient(var(--gd),transparent);animation:rp 2s ease-in-out infinite}
+@keyframes rp{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:.3;transform:scaleY(.4)}}
+@keyframes su{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+
+/* TICKER */
+.tk{overflow:hidden;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);background:var(--s1);padding:.8rem 0}
+.tkt{display:flex;animation:tkr 35s linear infinite;white-space:nowrap}
+.tkt:hover{animation-play-state:paused}
+.tki{flex-shrink:0;padding:0 2rem;font-family:'Syne',sans-serif;font-size:.78rem;letter-spacing:.15em;color:var(--mu);transition:color .3s;cursor:none}
+.tki:hover{color:var(--gd)}
+.tkd{color:var(--gd);margin:0 1.2rem;font-size:.45rem;vertical-align:middle}
+@keyframes tkr{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* SECTION */
+.sec{padding:8rem 3.5rem}
+.sl{font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gd);margin-bottom:.7rem;display:flex;align-items:center;gap:.8rem}
+.sl::after{content:'';width:40px;height:1px;background:var(--bd)}
+.sh{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4.5vw,3.4rem);color:var(--wh);line-height:1.1;margin-bottom:3.5rem}
+.sh em{color:var(--gd);font-style:italic}
+
+/* FEATURED */
+.fsec{background:var(--s1)}
+.fg{display:grid;grid-template-columns:280px 1fr;gap:5rem;align-items:start}
+.fp{position:relative;width:280px;cursor:none}
+.fpi{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;filter:saturate(.8);transition:transform .7s var(--ease),filter .6s}
+.fp:hover .fpi{transform:scale(1.04) rotate(-1deg);filter:saturate(1)}
+.fpsh{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,8,.5) 0%,transparent 50%)}
+.fsc{position:absolute;top:-14px;right:-14px;width:64px;height:64px;background:var(--gd);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(201,168,76,.35)}
+.fsn{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--bg);line-height:1}
+.fsd{font-size:.5rem;letter-spacing:.1em;color:rgba(6,6,8,.6)}
+.fco{}
+.fr{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+.st{display:flex;gap:3px}
+.s{width:13px;height:13px;background:var(--gd);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.sh2{font-size:.65rem;letter-spacing:.15em;color:var(--di)}
+.ftt{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;color:var(--wh);line-height:1.1;margin-bottom:.4rem}
+.fmeta{font-size:.72rem;color:var(--di);letter-spacing:.08em;margin-bottom:1.6rem}
+.fpull{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-style:italic;color:var(--wh);line-height:1.65;border-left:2px solid var(--gd);padding-left:1.3rem;margin-bottom:1.6rem}
+.fbody{font-size:.88rem;line-height:1.95;color:var(--di);margin-bottom:1.8rem}
+.tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem}
+.tag{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--di);border:1px solid var(--bd);padding:.3rem .8rem;transition:all .3s;cursor:none}
+.tag:hover{color:var(--gd);border-color:var(--gd)}
+.rl{display:inline-flex;align-items:center;gap:.6rem;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gd);text-decoration:none;transition:gap .35s var(--ease)}
+.rl:hover{gap:1.2rem}
+
+/* WORLD GRID */
+.wg{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bd)}
+.wc{background:var(--s2);overflow:hidden;position:relative;cursor:none;opacity:0;transform:translateY(44px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.wc.in{opacity:1;transform:translateY(0)}
+.wc:nth-child(1){transition-delay:0s}.wc:nth-child(2){transition-delay:.07s}.wc:nth-child(3){transition-delay:.14s}.wc:nth-child(4){transition-delay:.21s}
+.wc:nth-child(5){transition-delay:.07s}.wc:nth-child(6){transition-delay:.14s}.wc:nth-child(7){transition-delay:.21s}.wc:nth-child(8){transition-delay:.28s}
+.wc:nth-child(9){transition-delay:.14s}.wc:nth-child(10){transition-delay:.21s}.wc:nth-child(11){transition-delay:.28s}.wc:nth-child(12){transition-delay:.35s}
+.ciw{aspect-ratio:2/3;overflow:hidden;position:relative}
+.ci{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.7) brightness(.85);transition:transform .9s var(--ease),filter .7s}
+.wc:hover .ci{transform:scale(1.1);filter:saturate(1) brightness(.95)}
+.cit{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,8,.96) 0%,rgba(6,6,8,.4) 50%,transparent 100%)}
+.csc{position:absolute;top:.8rem;right:.8rem;font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--bg);background:var(--gd);width:42px;height:42px;display:flex;align-items:center;justify-content:center;transform:translateY(-8px);opacity:0;transition:transform .4s var(--ease),opacity .4s}
+.wc:hover .csc{transform:translateY(0);opacity:1}
+.cflag{position:absolute;top:.8rem;left:.8rem;font-size:1.1rem}
+.cb{padding:1.1rem}
+.cg{font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gd);margin-bottom:.4rem}
+.ct{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--wh);line-height:1.2;margin-bottom:.25rem;font-weight:600}
+.cd{font-size:.68rem;color:var(--mu);margin-bottom:.7rem}
+.cs{font-size:.78rem;line-height:1.75;color:var(--di);margin-bottom:.9rem}
+.cc{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--di);text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:color .3s,gap .3s var(--ease)}
+.wc:hover .cc{color:var(--gd);gap:.8rem}
+
+/* REGIONS */
+.rbar{display:flex;overflow-x:auto;scrollbar-width:none;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);background:var(--s1)}
+.rbar::-webkit-scrollbar{display:none}
+.ri{flex:1;min-width:130px;padding:2.2rem 1.5rem;text-align:center;border-right:1px solid var(--bd);cursor:none;position:relative;overflow:hidden}
+.ri:last-child{border-right:none}
+.ri::before{content:'';position:absolute;bottom:0;left:0;right:0;height:0;background:var(--gd);transition:height .4s var(--ease)}
+.ri:hover::before{height:2px}
+.rem{font-size:1.6rem;display:block;margin-bottom:.5rem;transition:transform .4s var(--ease)}
+.ri:hover .rem{transform:translateY(-3px) scale(1.12)}
+.rn{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mu);transition:color .3s}
+.ri:hover .rn{color:var(--gd)}
+
+/* NUMBAR */
+.nb{background:var(--bg);padding:5rem 3.5rem;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);position:relative;overflow:hidden}
+.nbg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(5rem,16vw,14rem);color:transparent;-webkit-text-stroke:1px rgba(201,168,76,.05);white-space:nowrap;pointer-events:none;animation:ng 14s ease-in-out infinite alternate}
+@keyframes ng{from{transform:translate(-51%,-50%)}to{transform:translate(-49%,-50%)}}
+.nr{display:flex;justify-content:center;position:relative;z-index:1}
+.ni{flex:1;text-align:center;padding:1.5rem;border-right:1px solid var(--bd)}
+.ni:last-child{border-right:none}
+.nd{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.5rem,5vw,4.5rem);color:var(--gd);display:block;line-height:1}
+.nl2{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--di);margin-top:.4rem}
+
+/* NEWSLETTER */
+.nlsec{background:var(--s1);padding:8rem 3.5rem;text-align:center;position:relative;overflow:hidden}
+.nlsec::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.05) 0%,transparent 70%);animation:gp 4s ease-in-out infinite}
+@keyframes gp{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.3)}}
+.nh{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,7vw,5rem);font-weight:700;color:var(--wh);margin-bottom:1rem;position:relative;z-index:1}
+.nsub{font-size:.85rem;color:var(--di);margin-bottom:2.5rem;position:relative;z-index:1}
+.nf{display:flex;max-width:420px;margin:0 auto;border:1px solid var(--bd);overflow:hidden;position:relative;z-index:1;transition:border-color .4s}
+.nf:focus-within{border-color:var(--gd)}
+.ni2{flex:1;background:transparent;border:none;outline:none;color:var(--wh);padding:1rem 1.4rem;font-family:'Inter',sans-serif;font-size:.85rem}
+.ni2::placeholder{color:var(--mu)}
+.nb2{background:var(--gd);border:none;cursor:none;padding:1rem 1.8rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.1em;color:var(--bg);transition:background .3s}
+.nb2:hover{background:var(--gl)}
+
+/* FOOTER */
+footer{background:var(--bg);border-top:1px solid var(--bd);padding:2.5rem 3.5rem;display:flex;align-items:center;justify-content:space-between}
+.fl{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:.1em;color:var(--gd)}
+.fc{font-size:.65rem;color:var(--mu)}
+.fls{display:flex;gap:2rem}
+.fls a{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--di);text-decoration:none;transition:color .3s}
+.fls a:hover{color:var(--gd)}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.rv.in{opacity:1;transform:translateY(0)}
+.rd1{transition-delay:.1s}.rd2{transition-delay:.2s}.rd3{transition-delay:.3s}
+
+@media(max-width:900px){
+  nav{padding:1.2rem 1.5rem}.nls{display:none}
+  .hero{padding:0 1.5rem 5rem}
+  .sec{padding:5rem 1.5rem}
+  .fg{grid-template-columns:1fr;gap:2.5rem}
+  .fp{width:100%;max-width:260px}
+  .wg{grid-template-columns:repeat(2,1fr)}
+  .nr{flex-wrap:wrap}
+  footer{flex-direction:column;gap:1.2rem;text-align:center}
+}
+</style>
+</head>
+<body>
+<div id="c1"></div><div id="c2"></div>
+
+<!-- LOADER -->
+<div id="ldr">
+  <div class="ls">World Cinema</div>
+  <div class="lw"><span class="ll">L</span><span class="ll">U</span><span class="ll">M</span><span class="ll">I</span><span class="ll">È</span><span class="ll">R</span><span class="ll">E</span><span class="ll">S</span></div>
+  <div class="lb"></div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nl">LUMIÈRES<span class="dot"></span></a>
+  <ul class="nls">
+    <li><a href="#world">World</a></li>
+    <li><a href="#malayalam">Malayalam</a></li>
+    <li><a href="#regions">Regions</a></li>
+    <li><a href="#nl">Subscribe</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hbg" id="hbg"></div>
+  <div class="hsh"></div>
+  <div class="hcon">
+    <div class="hbad">World Cinema · 2025</div>
+    <h1 class="ht">Every<br>Screen,<br><span class="it out">Every</span> <span class="it">Voice.</span></h1>
+    <p class="hsb">Reviews from Kerala to Cannes, Seoul to São Paulo. Cinema without borders.</p>
+    <div class="hac">
+      <a href="#world" class="bg"><span>Explore Reviews</span><span>→</span></a>
+      <a href="#malayalam" class="bg2">Malayalam Cinema ↓</a>
+    </div>
+  </div>
+  <div class="hscr"><span>Scroll</span><div class="hrod"></div></div>
+</section>
+
+<!-- TICKER -->
+<div class="tk"><div class="tkt" id="tkt"></div></div>
+
+<!-- FEATURED -->
+<section class="sec fsec" id="featured">
+  <div class="sl rv">Featured</div>
+  <div class="sh rv rd1">This Week's <em>Pick</em></div>
+  <div class="fg">
+    <div class="fp rv">
+      <img class="fpi" src="https://image.tmdb.org/t/p/w500/aosm8NMQ3UyoBVpSxyimorCQykC.jpg" alt="Eddington"
+        onerror="this.style.background='linear-gradient(135deg,#1a0a0a,#0a0a1a)';this.style.height='420px';this.removeAttribute('src')"/>
+      <div class="fpsh"></div>
+      <div class="fsc"><div class="fsn">9.1</div><div class="fsd">/10</div></div>
+    </div>
+    <div class="fco">
+      <div class="fr rv"><div class="st"><div class="s"></div><div class="s"></div><div class="s"></div><div class="s"></div><div class="s" style="background:linear-gradient(to right,var(--gd) 50%,var(--mu) 50%)"></div></div><span class="sh2">2025 · USA</span></div>
+      <div class="ftt rv rd1">Eddington</div>
+      <div class="fmeta rv rd1">Dir. Ari Aster · 148 min · Drama / Thriller</div>
+      <blockquote class="fpull rv rd2">"A modern western dressed as psychosis — the sharpest mirror American cinema has held up this decade."</blockquote>
+      <p class="fbody rv rd2">Set in pandemic-era New Mexico, Aster's most lucid film is also his most unsettling. Joaquin Phoenix plays a sheriff whose convictions curdle as the world refuses to make sense. The restraint is surgical — every silence loaded.</p>
+      <div class="tags rv rd3"><span class="tag">Ari Aster</span><span class="tag">2025</span><span class="tag">Thriller</span><span class="tag">Phoenix</span></div>
+      <a href="#" class="rl rv rd3">Full Review →</a>
+    </div>
+  </div>
+</section>
+
+<!-- WORLD CINEMA -->
+<section class="sec" id="world" style="background:var(--bg);padding-bottom:0">
+  <div class="sl rv">Global</div>
+  <div class="sh rv rd1">World <em>Cinema</em> Reviews</div>
+</section>
+<div class="wg" id="wg"></div>
+
+<!-- REGION BAR -->
+<div class="rbar" id="regions">
+  <div class="ri"><span class="rem">🇮🇳</span><span class="rn">India</span></div>
+  <div class="ri"><span class="rem">🇰🇷</span><span class="rn">Korea</span></div>
+  <div class="ri"><span class="rem">🇯🇵</span><span class="rn">Japan</span></div>
+  <div class="ri"><span class="rem">🇫🇷</span><span class="rn">France</span></div>
+  <div class="ri"><span class="rem">🇮🇷</span><span class="rn">Iran</span></div>
+  <div class="ri"><span class="rem">🇧🇷</span><span class="rn">Brazil</span></div>
+  <div class="ri"><span class="rem">🇺🇸</span><span class="rn">USA</span></div>
+  <div class="ri"><span class="rem">🌍</span><span class="rn">Africa</span></div>
+</div>
+
+<!-- NUMBAR -->
+<div class="nb">
+  <div class="nbg">LUMIÈRES</div>
+  <div class="nr">
+    <div class="ni"><span class="nd" data-t="1240">0</span><div class="nl2">Reviews</div></div>
+    <div class="ni"><span class="nd" data-t="68">0</span><div class="nl2">Countries</div></div>
+    <div class="ni"><span class="nd" data-t="38">0</span><div class="nl2">Languages</div></div>
+    <div class="ni"><span class="nd" data-t="9">0</span><div class="nl2">Years</div></div>
+  </div>
+</div>
+
+<!-- NEWSLETTER -->
+<section class="nlsec" id="nl">
+  <h2 class="nh rv">Cinema Without<br><em style="color:var(--gd);font-style:italic">Borders.</em></h2>
+  <p class="nsub rv rd1">Weekly reviews from every corner of world cinema. Malayalam to Mandarin.</p>
+  <div class="nf rv rd2">
+    <input class="ni2" type="email" placeholder="your@email.com"/>
+    <button class="nb2">Subscribe</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fl">LUMIÈRES</div>
+  <p class="fc">© 2026 Lumières Film Reviews</p>
+  <div class="fls"><a href="#">Twitter</a><a href="#">Letterboxd</a><a href="#">RSS</a></div>
+</footer>
+
+<script>
+/* CURSOR */
+const c1=document.getElementById('c1'),c2=document.getElementById('c2');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;c1.style.left=mx+'px';c1.style.top=my+'px'});
+(function lp(){cx+=(mx-cx)*.13;cy+=(my-cy)*.13;c2.style.left=cx+'px';c2.style.top=cy+'px';requestAnimationFrame(lp)})();
+document.querySelectorAll('a,button,.ri,.wc,.fp,.tag').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{c1.style.width='18px';c1.style.height='18px';c2.style.width='56px';c2.style.height='56px';c2.style.borderColor='rgba(201,168,76,.7)'});
+  el.addEventListener('mouseleave',()=>{c1.style.width='8px';c1.style.height='8px';c2.style.width='32px';c2.style.height='32px';c2.style.borderColor='rgba(201,168,76,.4)'});
+});
+
+/* LOADER */
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('ldr').classList.add('out'),1900));
+
+/* NAV */
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('on',scrollY>60),{passive:true});
+
+/* HERO PANELS - real film poster backgrounds */
+const HERO=[
+  {src:'https://image.tmdb.org/t/p/w500/aosm8NMQ3UyoBVpSxyimorCQykC.jpg',t:'Eddington'},
+  {src:'https://image.tmdb.org/t/p/w500/z53D72EAOxGRqdr7KXXWp9dJiDe.jpg',t:'MI8'},
+  {src:'https://image.tmdb.org/t/p/w500/dWGMkXqUvAuNTRYDHRNvQbIEdXA.jpg',t:'Warfare'},
+  {src:'https://image.tmdb.org/t/p/w500/6CoRTJTmijhBLJTUNoVSUNxZMEI.jpg',t:'F1'},
+  {src:'https://image.tmdb.org/t/p/w500/lLfMBpnkNWJHVtE6GHsXqGmEfVN.jpg',t:'Wes Anderson'},
+  {src:'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg',t:'Sinners'},
+];
+const hbg=document.getElementById('hbg');
+HERO.forEach(h=>{
+  hbg.innerHTML+=`<div class="hpanel"><img src="${h.src}" alt="${h.t}" onerror="this.style.background='linear-gradient(135deg,#12081a,#0a0a18)';this.removeAttribute('src')"/><div class="htitle">${h.t}</div></div>`;
+});
+
+/* TICKER */
+const TICK=['Eddington','Warfare','F1','Manjummel Boys','Aavesham','Bramayugam','Mission Impossible 8','Wes Anderson','Sinners','All We Imagine as Light','RRR','Parasite','Past Lives','The Zone of Interest','Monster (Kore-eda)','Baahubali','Ponniyin Selvan','Vikram','Kalki 2898-AD'];
+const tkt=document.getElementById('tkt');
+[...TICK,...TICK].forEach(t=>{tkt.innerHTML+=`<span class="tki">${t}<span class="tkd">◆</span></span>`});
+
+/* WORLD FILMS DATA */
+const FILMS=[
+  // Malayalam 🇮🇳
+  {title:'Manjummel Boys',dir:'Chidambaram S.',year:'2024',genre:'Thriller',score:'9.2',flag:'🇮🇳',lang:'Malayalam',
+   snippet:'The Guna caves rescue becomes a visceral survival masterpiece. Malayalam cinema at its absolute peak.',
+   src:'https://image.tmdb.org/t/p/w500/ztzLk4zj8YQbFrVNYAaXsNSiJOz.jpg'},
+  {title:'Bramayugam',dir:'Rahul Sadasivan',year:'2024',genre:'Horror',score:'8.9',flag:'🇮🇳',lang:'Malayalam',
+   snippet:'Shot in chilling black and white. A folk-horror masterwork soaked in dread and Kerala mythology.',
+   src:'https://image.tmdb.org/t/p/w500/oBIQDKcqNxKckjugtmzpIIOgoc4.jpg'},
+  {title:'Aavesham',dir:'Jithu Madhavan',year:'2024',genre:'Action Comedy',score:'8.5',flag:'🇮🇳',lang:'Malayalam',
+   snippet:'Fahadh Faasil is pure electric energy. A comedy about college goonda politics that somehow never stops surprising.',
+   src:'https://image.tmdb.org/t/p/w500/xg27NrXi7VXCGUr7MG75UqLl6Vg.jpg'},
+  {title:'Kishkindha Kaandam',dir:'Dinjith Ayyathan',year:'2024',genre:'Drama',score:'9.0',flag:'🇮🇳',lang:'Malayalam',
+   snippet:'A quiet family drama with an extraordinary emotional depth. The year\'s most devastating Malayalam film.',
+   src:'https://image.tmdb.org/t/p/w500/2Nti3gYAX513wvhp8IUZHk0GZ7E.jpg'},
+  // International
+  {title:'All We Imagine as Light',dir:'Payal Kapadia',year:'2024',genre:'Drama',score:'9.3',flag:'🇮🇳',lang:'Hindi/Marathi',
+   snippet:'Cannes Grand Prix winner. Two nurses in Mumbai — a poem of longing, displacement and sisterhood.',
+   src:'https://image.tmdb.org/t/p/w500/ufhT5uYBeyHraE1SMN4PjWuXzXs.jpg'},
+  {title:'Warfare',dir:'Alex Garland',year:'2025',genre:'War',score:'8.7',flag:'🇺🇸',lang:'English',
+   snippet:'Garland strips out music, narrative and heroism. Real-time, near-documentary. Profoundly harrowing.',
+   src:'https://image.tmdb.org/t/p/w500/dWGMkXqUvAuNTRYDHRNvQbIEdXA.jpg'},
+  {title:'The Zone of Interest',dir:'Jonathan Glazer',year:'2024',genre:'Drama',score:'9.1',flag:'🇬🇧',lang:'German',
+   snippet:'The mundane horror of the Holocaust\'s architects living next door to Auschwitz. Devastating.',
+   src:'https://image.tmdb.org/t/p/w500/hUu9zyZmKuTHOBp9fqBxYJhkFbm.jpg'},
+  {title:'Monster',dir:'Hirokazu Kore-eda',year:'2024',genre:'Drama',score:'9.0',flag:'🇯🇵',lang:'Japanese',
+   snippet:'Three perspectives of the same event, each rewriting everything. Kore-eda at his most structurally dazzling.',
+   src:'https://image.tmdb.org/t/p/w500/6B4GpkRUTsAVtXtQFjSPk7lCDMV.jpg'},
+  {title:'Past Lives',dir:'Celine Song',year:'2024',genre:'Romance',score:'9.2',flag:'🇰🇷',lang:'Korean/English',
+   snippet:'The concept of in-yeon — fate across past lives — made into 106 minutes of aching, adult heartbreak.',
+   src:'https://image.tmdb.org/t/p/w500/k3waqVXAjFcK0jEBUNS19boSVsr.jpg'},
+  {title:'Sinners',dir:'Ryan Coogler',year:'2025',genre:'Horror/Drama',score:'9.0',flag:'🇺🇸',lang:'English',
+   snippet:'Twin brothers, a Mississippi juke joint, and something ancient outside. Coogler\'s most personal film.',
+   src:'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg'},
+  {title:'Eddington',dir:'Ari Aster',year:'2025',genre:'Thriller',score:'9.1',flag:'🇺🇸',lang:'English',
+   snippet:'Pandemic-era paranoia in New Mexico. Phoenix is coiled and devastating. Aster finds a new register.',
+   src:'https://image.tmdb.org/t/p/w500/aosm8NMQ3UyoBVpSxyimorCQykC.jpg'},
+  {title:'The Phoenician Scheme',dir:'Wes Anderson',year:'2025',genre:'Comedy',score:'8.1',flag:'🇺🇸',lang:'English',
+   snippet:'Anderson\'s ornate symmetry loosens enough to feel genuinely playful. His most alive film in years.',
+   src:'https://image.tmdb.org/t/p/w500/lLfMBpnkNWJHVtE6GHsXqGmEfVN.jpg'},
+];
+
+const wg=document.getElementById('wg');
+FILMS.forEach(f=>{
+  wg.innerHTML+=`<div class="wc">
+    <div class="ciw">
+      <img class="ci" src="${f.src}" alt="${f.title}" onerror="this.style.background='linear-gradient(135deg,#12081a,#0a1418)';this.removeAttribute('src')"/>
+      <div class="cit"></div>
+      <div class="csc">${f.score}</div>
+      <div class="cflag">${f.flag}</div>
+    </div>
+    <div class="cb">
+      <div class="cg">${f.lang} · ${f.genre}</div>
+      <div class="ct">${f.title}</div>
+      <div class="cd">${f.dir} · ${f.year}</div>
+      <div class="cs">${f.snippet}</div>
+      <a href="#" class="cc">Read Review →</a>
+    </div>
+  </div>`;
+});
+
+/* SCROLL PARALLAX HERO */
+window.addEventListener('scroll',()=>{
+  document.querySelectorAll('.hpanel img').forEach(img=>{
+    img.style.transform=`translateY(${scrollY*.25}px)`;
+  });
+},{passive:true});
+
+/* INTERSECTION OBSERVER */
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.1});
+document.querySelectorAll('.rv,.wc').forEach(el=>io.observe(el));
+
+/* COUNT UP */
+const cio=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(!e.isIntersecting)return;
+    const el=e.target,t=+el.dataset.t;let c=0;
+    const step=t/55,tm=setInterval(()=>{c=Math.min(c+step,t);el.textContent=Math.floor(c);if(c>=t)clearInterval(tm)},18);
+    cio.unobserve(el);
+  });
+},{threshold:.5});
+document.querySelectorAll('.nd').forEach(el=>cio.observe(el));
+</script>
+</body>
+</html>
